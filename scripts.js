@@ -22,6 +22,7 @@ class KnightTour {
       [2, -1],
     ];
     this.iterations = 0; // Counter for the number of iterations
+    this.attempts = 0; // Counter for the number of attempts
   }
 
   // Function to check if a move is inside the board and not yet visited
@@ -37,7 +38,8 @@ class KnightTour {
 
   // The main function that uses backtracking to solve the problem
   solveKTUtil(x, y, movei, board) {
-    this.iterations++; // Increment the iteration counter
+    this.attempts++; // Increment the iteration counter of attempts
+    if (movei === 1) this.iterations++; // Increment the iteration counter on first iteration
     let k, next_x, next_y;
     // If movei equals the number of squares, tour is complete
     if (movei === this.chessboard.size * this.chessboard.size) return true;
@@ -50,8 +52,10 @@ class KnightTour {
       if (this.isSafe(next_x, next_y, board)) {
         board[next_x][next_y] = movei;
         // Recursively check if this move leads to a solution
-        if (this.solveKTUtil(next_x, next_y, movei + 1, board)) return true;
-        else board[next_x][next_y] = -1; // Backtrack if it doesn't lead to a solution
+        if (this.solveKTUtil(next_x, next_y, movei + 1, board)) {
+          this.iterations++;
+          return true;
+        } else board[next_x][next_y] = -1; // Backtrack if it doesn't lead to a solution
       }
     }
     return false;
@@ -60,6 +64,7 @@ class KnightTour {
   // Function to solve the Knight's Tour starting from (x, y)
   solveKnightTour(x, y) {
     this.iterations = 0; // Reset the iteration counter
+    this.attempts = 0; // Reset the attempts counter
     //console.log('x:'+x+' y:'+y);
 
     // Create a 2D array to represent the board and initialize all cells to -1
@@ -105,7 +110,7 @@ class ChessboardRenderer {
    * For faster processing chessboard with 5x5 dementions
    * are more than enough for this practice.
    */
-  static CHESSBOARD_SIZE = 5;
+  static CHESSBOARD_SIZE = 6;
   /**
    * Renders the full board
    */
@@ -172,6 +177,7 @@ class ChessboardRenderer {
     })
       .then((result) => {
         console.log(`Number of iterations: ${knightTour.iterations}`); // Log the number of iterations
+        console.log(`Number of attempts: ${knightTour.attempts}`); // Log the number of attempts
         const chessboardElement = document.getElementById("chessboard");
         if (result instanceof Array) {
           result.forEach((key, idx) => {
@@ -198,6 +204,7 @@ class ChessboardRenderer {
       })
       .catch(() => {
         console.log(`Number of iterations: ${knightTour.iterations}`); // Log the number of iterations on failure
+        console.log(`Number of attempts: ${knightTour.attempts}`); // Log the number of attempts on failure
         const chessboardElement = document.getElementById("chessboard");
         // create and attach result output at the bottom of chessboard
         const row = document.createElement("tr");
