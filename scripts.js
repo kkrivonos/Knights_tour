@@ -68,7 +68,7 @@ class KnightTour {
     );
 
     // Start the tour from the given initial position
-    board[y][x] = 0;
+    board[x][y] = 0;
     //console.log('board: '+board);
     // Try to solve the tour starting from (x, y)
     if (!this.solveKTUtil(x, y, 1, board)) return false;
@@ -77,7 +77,7 @@ class KnightTour {
     const result = [];
     for (let i = 0; i < this.chessboard.size; i++) {
       for (let j = 0; j < this.chessboard.size; j++) {
-        result[board[i][j]] = `${String.fromCharCode(65 + j)}${
+        result[board[j][i]] = `${String.fromCharCode(65 + j)}${
           this.chessboard.size - i
         }`;
       }
