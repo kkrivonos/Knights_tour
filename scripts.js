@@ -110,7 +110,7 @@ class ChessboardRenderer {
    * For faster processing chessboard with 5x5 dementions
    * are more than enough for this practice.
    */
-  static CHESSBOARD_SIZE = 6;
+  static CHESSBOARD_SIZE = 5;
   /**
    * Renders the full board
    */
