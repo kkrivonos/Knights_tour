@@ -8,7 +8,17 @@
   </head>
 
   <body>
+    <h1>Knight's Tour</h1>
+    <div>
+      <label for="closedTour">Closed Tour:</label>
+      <input type="checkbox" id="closedTour">
+    </div>
+    <div>
+      <label for="chessboardSize">Chessboard Size:</label>
+      <input type="number" id="chessboardSize" value="5" min="1" max="99">
+      <button id="applySize">Apply</button>
+    </div>
     <table id="chessboard"></table>
-    <script src="./scripts.js"></script>
+    <script src="scripts.js"></script>
   </body>
 </html>

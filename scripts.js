@@ -221,6 +221,8 @@ class ChessboardRenderer {
     ChessboardRenderer.render();
     const chessboard = new Chessboard(ChessboardRenderer.CHESSBOARD_SIZE);
     const knightTour = new KnightTour(chessboard);
+    knightTour.roundTrip = document.getElementById("closedTour").checked;
+
     new Promise((resolve, reject) => {
       const result = knightTour.solveKnightTour(x, y);
       return result ? resolve(result) : reject();
@@ -264,4 +266,19 @@ class ChessboardRenderer {
       });
   }
 }
+
+document.getElementById("applySize").addEventListener("click", () => {
+  const newSize = parseInt(document.getElementById("chessboardSize").value, 10);
+  if (!isNaN(newSize) && newSize > 0) {
+    ChessboardRenderer.CHESSBOARD_SIZE = newSize;
+    ChessboardRenderer.render();
+  }
+});
+
+document.getElementById("closedTour").addEventListener("click", () => {
+    ChessboardRenderer.render();
+  }
+);
+
+
 ChessboardRenderer.render();
