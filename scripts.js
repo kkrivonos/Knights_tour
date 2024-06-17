@@ -22,7 +22,9 @@ class KnightTour {
       [2, -1],
     ];
     this.iterations = 0; // Counter for the number of iterations
-    this.attempts = 0; // Counter for the number of attempts
+    this.roundTrip = false; // value to set whether the Knight should return to its starting position
+    this.first_x = 0; // Initial position x
+    this.first_y = 0; // Initial position y
   }
 
   // Function to check if a move is inside the board and not yet visited
@@ -36,26 +38,70 @@ class KnightTour {
     );
   }
 
-  // The main function that uses backtracking to solve the problem
-  solveKTUtil(x, y, movei, board) {
-    this.attempts++; // Increment the iteration counter of attempts
-    if (movei === 1) this.iterations++; // Increment the iteration counter on first iteration
-    let k, next_x, next_y;
-    // If movei equals the number of squares, tour is complete
-    if (movei === this.chessboard.size * this.chessboard.size) return true;
+  // Function to get the number of valid moves from the given position
+  getDegree(x, y, board) {
+    let count = 0;
+    for (let i = 0; i < this.moves.length; i++) {
+      const next_x = x + this.moves[i][0];
+      const next_y = y + this.moves[i][1];
+      if (this.isSafe(next_x, next_y, board)) {
+        count++;
+      }
+    }
+    return count;
+  }
 
-    // Try all possible moves from the current position
-    for (k = 0; k < this.moves.length; k++) {
+  // The main function that uses Warnsdorf's rule to solve the problem
+  solveKTUtil(x, y, movei, board) {
+    let next_x, next_y;
+
+    if (movei === 1) {
+      this.iterations++; // Increment the iteration counter on first iteration
+      // Remember initial position
+      this.first_x = x;
+      this.first_y = y;
+    }
+
+    // If movei equals the number of squares, tour is complete
+    if (movei === this.chessboard.size * this.chessboard.size) {
+      if (this.roundTrip) {
+        // Check if we can return to the starting position
+        for (let i = 0; i < this.moves.length; i++) {
+          if (
+            this.first_x === x + this.moves[i][0] &&
+            this.first_y === y + this.moves[i][1]
+          ) {
+            return true;
+          }
+        }
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    // Get the next move with the least number of onward moves
+    const nextMoves = [];
+    for (let k = 0; k < this.moves.length; k++) {
       next_x = x + this.moves[k][0];
       next_y = y + this.moves[k][1];
-      // Check if the move is valid
       if (this.isSafe(next_x, next_y, board)) {
-        board[next_x][next_y] = movei;
-        // Recursively check if this move leads to a solution
-        if (this.solveKTUtil(next_x, next_y, movei + 1, board)) {
-          this.iterations++;
-          return true;
-        } else board[next_x][next_y] = -1; // Backtrack if it doesn't lead to a solution
+        const degree = this.getDegree(next_x, next_y, board);
+        nextMoves.push({ x: next_x, y: next_y, degree: degree });
+      }
+    }
+    nextMoves.sort((a, b) => a.degree - b.degree);
+
+    // Try all possible moves from the current position
+    for (const move of nextMoves) {
+      board[move.x][move.y] = movei;
+      //console.log('board[move.x][move.y]: '+board[move.x][move.y]);
+      // Recursively check if this move leads to a solution
+      if (this.solveKTUtil(move.x, move.y, movei + 1, board)) {
+        this.iterations++;
+        return true;
+      } else {
+        board[move.x][move.y] = -1; // Backtrack if it doesn't lead to a solution
       }
     }
     return false;
@@ -64,7 +110,7 @@ class KnightTour {
   // Function to solve the Knight's Tour starting from (x, y)
   solveKnightTour(x, y) {
     this.iterations = 0; // Reset the iteration counter
-    this.attempts = 0; // Reset the attempts counter
+
     //console.log('x:'+x+' y:'+y);
 
     // Create a 2D array to represent the board and initialize all cells to -1
@@ -74,10 +120,14 @@ class KnightTour {
 
     // Start the tour from the given initial position
     board[x][y] = 0;
-    //console.log('board: '+board);
+    console.log(
+      "Starting position: " +
+        `${String.fromCharCode(65 + x)}${this.chessboard.size - y}`
+    );
+
     // Try to solve the tour starting from (x, y)
     if (!this.solveKTUtil(x, y, 1, board)) return false;
-    //console.log('board: '+board);
+
     // If the tour is complete, format the result to return cell keys
     const result = [];
     for (let i = 0; i < this.chessboard.size; i++) {
@@ -177,7 +227,6 @@ class ChessboardRenderer {
     })
       .then((result) => {
         console.log(`Number of iterations: ${knightTour.iterations}`); // Log the number of iterations
-        console.log(`Number of attempts: ${knightTour.attempts}`); // Log the number of attempts
         const chessboardElement = document.getElementById("chessboard");
         if (result instanceof Array) {
           result.forEach((key, idx) => {
@@ -204,7 +253,6 @@ class ChessboardRenderer {
       })
       .catch(() => {
         console.log(`Number of iterations: ${knightTour.iterations}`); // Log the number of iterations on failure
-        console.log(`Number of attempts: ${knightTour.attempts}`); // Log the number of attempts on failure
         const chessboardElement = document.getElementById("chessboard");
         // create and attach result output at the bottom of chessboard
         const row = document.createElement("tr");
