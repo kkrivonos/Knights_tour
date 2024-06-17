@@ -54,9 +54,8 @@ class KnightTour {
   // The main function that uses Warnsdorf's rule to solve the problem
   solveKTUtil(x, y, movei, board) {
     let next_x, next_y;
-this.iterations++; // Increment the iteration counter on first iteration
+    this.iterations++; // Increment the iteration counter on first iteration
     if (movei === 1) {
-      
       // Remember initial position
       this.first_x = x;
       this.first_y = y;
@@ -275,9 +274,7 @@ document.getElementById("applySize").addEventListener("click", () => {
 });
 
 document.getElementById("closedTour").addEventListener("click", () => {
-    ChessboardRenderer.render();
-  }
-);
-
+  ChessboardRenderer.render();
+});
 
 ChessboardRenderer.render();
