@@ -54,9 +54,9 @@ class KnightTour {
   // The main function that uses Warnsdorf's rule to solve the problem
   solveKTUtil(x, y, movei, board) {
     let next_x, next_y;
-
+this.iterations++; // Increment the iteration counter on first iteration
     if (movei === 1) {
-      this.iterations++; // Increment the iteration counter on first iteration
+      
       // Remember initial position
       this.first_x = x;
       this.first_y = y;
@@ -98,7 +98,6 @@ class KnightTour {
       //console.log('board[move.x][move.y]: '+board[move.x][move.y]);
       // Recursively check if this move leads to a solution
       if (this.solveKTUtil(move.x, move.y, movei + 1, board)) {
-        this.iterations++;
         return true;
       } else {
         board[move.x][move.y] = -1; // Backtrack if it doesn't lead to a solution
